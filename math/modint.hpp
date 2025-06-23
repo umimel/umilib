@@ -12,21 +12,17 @@ public:
     modint operator-() const { 
       return modint(-x);
     }
-    bool operator==(const modint& a){
-        if(x == a) return true;
-        else return false;
+    bool operator==(const modint& a) const {
+        return x == a.x;
     }
-    bool operator==(long long a){
-        if(x == a) return true;
-        else return false;
+    bool operator==(long long a) const {
+        return x == a;
     }
-    bool operator!=(const modint& a){
-        if(x != a) return true;
-        else return false;
+    bool operator!=(const modint& a) const {
+        return x != a.x;
     }
-    bool operator!=(long long a){
-        if(x != a) return true;
-        else return false;
+    bool operator!=(long long a) const {
+        return x != a;
     }
     modint& operator+=(const modint& a) {
         if ((x += a.x) >= mod) x -= mod;
