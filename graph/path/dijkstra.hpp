@@ -17,7 +17,7 @@ private:
     edges<T> epar;
 
 public:
-    dijkstra(graph<T> G, int s) : G(G), s(s){
+    dijkstra(const graph<T>& G, int s) : G(G), s(s){
         // initilization
         n = G.get_vnum();
         dist.resize(n, TINF);
@@ -37,7 +37,7 @@ public:
             que.pop();
             if(dist[v] < d) continue;
 
-            for(auto e : G[v]){
+            for(const auto& e : G[v]){
                 if(dist[v] + e.cost < dist[e.to]){
                     dist[e.to] = dist[v] + e.cost;
                     vpar[e.to] = v;

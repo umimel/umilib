@@ -45,8 +45,8 @@ struct matrix{
         assert(p == B.height());
         vector<vector<T>> C(n, vector<T>(m, 0));
         for(int i = 0; i < n; i++)
-            for(int j = 0; j < m; j++)
-                for(int k = 0; k < p; k++)
+            for(int k = 0; k < p; k++)
+                for(int j = 0; j < m; j++)
                     C[i][j] = (C[i][j] + (*this)[i][k] * B[k][j]);
         A.swap(C);
         return (*this);
