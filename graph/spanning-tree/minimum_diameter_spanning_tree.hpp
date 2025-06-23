@@ -3,7 +3,7 @@
 
 /*depend on*/
 #include "../../header.hpp"
-#include "../template.hpp"
+#include "template.hpp"
 #include "../path/shortest_path.hpp"
 
 /*start*/

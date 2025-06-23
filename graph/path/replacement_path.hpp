@@ -3,7 +3,7 @@
 
 /*depend on*/
 #include "../../header.hpp"
-#include "../template.hpp"
+#include "template.hpp"
 #include "dijkstra.hpp"
 
 /*start*/

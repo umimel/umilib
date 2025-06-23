@@ -3,7 +3,7 @@
 
 /*depends on*/
 #include "../../header.hpp"
-#include "../template.hpp"
+#include "template.hpp"
 
 /*start*/
 template<typename S>

@@ -3,7 +3,7 @@
 
 /*depends on*/
 #include "../header.hpp"
-#include "../graph/template.hpp"
+#include "template.hpp"
 #include "lowest_common_ancestor.hpp"
 
 /*start*/
