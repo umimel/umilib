@@ -3,7 +3,7 @@
 
 /*depend on*/
 #include "../header.hpp"
-#include "template.hpp"
+#include "../template.hpp"
 
 /*start*/
 struct two_edge_connected_components{

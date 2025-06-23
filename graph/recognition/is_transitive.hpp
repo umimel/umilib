@@ -3,7 +3,7 @@
 
 /*depend on*/
 #include "../../header.hpp"
-#include "../graph-template.hpp"
+#include "../template.hpp"
 
 /*start*/
 bool is_transitive(graph<int> &G){

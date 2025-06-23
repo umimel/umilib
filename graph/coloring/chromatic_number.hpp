@@ -4,7 +4,7 @@
 /*depend on*/
 #include "../header.hpp"
 #include "../convolution/bitwise_or_convolution.hpp"
-#include "template.hpp"
+#include "../template.hpp"
 
 /*start*/
 int chromatic_number(unweighted_graph &G){

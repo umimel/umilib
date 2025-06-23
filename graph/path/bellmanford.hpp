@@ -3,7 +3,7 @@
 
 /*depends on*/
 #include "../header.hpp"
-#include "template.hpp"
+#include "../template.hpp"
 
 /*start*/
 vector<long long> bellmanford(weighted_graph<long long> G, int src){
