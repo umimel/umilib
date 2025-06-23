@@ -8,13 +8,13 @@ template<typename T, bool (*comp)(T, T)>
 struct heap{
     struct node{
         node *l, *r; // child
-        int s; // shortest distncance from leaf
+        int s; // shortest distance from leaf
         T val; // value of node
         node(T &val, node *lt = NULL, node *rt = NULL, int s = 0){
-            this.val = val;
+            this->val = val;
             r = rt;
             l = lt;
-            this.s = s;
+            this->s = s;
         }
     };
 
@@ -22,7 +22,7 @@ struct heap{
     node *root = 0;
     node *l, *r;
 
-    // constractar
+    // constructor
     heap(){}
 
     void meld(heap &rhs){

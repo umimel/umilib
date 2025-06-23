@@ -1,5 +1,5 @@
-#ifndef EULIAN_TRAIL_HPP
-#define EULIAN_TRAIL_HPP
+#ifndef EULERIAN_TRAIL_HPP
+#define EULERIAN_TRAIL_HPP
 
 /*depends on*/
 #include "../header.hpp"
