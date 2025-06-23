@@ -2,7 +2,7 @@
 #define MV_HPP
 
 /*depend on*/
-#include "../header.hpp"
+#include "../../header.hpp"
 
 /*start*/
 template<typename T>
@@ -64,6 +64,8 @@ struct micali_vazirani{
     vector<int> removed;
     vector<int> evenlvl, oddlvl;
     disjoint_set_union bud;
+    vector<int> color;
+    vector<vector<pair<int, int>>> childsInDDFSTree;
 
     int minlvl(int u){
         return min(evenlvl[u], oddlvl[u]);
@@ -74,6 +76,131 @@ struct micali_vazirani{
             return oddlvl[e.first]+oddlvl[e.second]+1;
         }else{
             return evenlvl[e.first]+evenlvl[e.second]+1;
+        }
+    }
+
+    micali_vazirani(int n, vector<pair<int, int>> edges) : n(n) {
+        G.resize(n);
+        mate.resize(n, -1);
+        predecessors.resize(n);
+        ddfsPredecessorsPtr.resize(n);
+        removed.resize(n);
+        evenlvl.resize(n);
+        oddlvl.resize(n);
+        color.resize(n);
+        childsInDDFSTree.resize(n);
+        
+        for(auto& e : edges) {
+            G[e.first].push_back(edge(e.second, e.first));
+            G[e.second].push_back(edge(e.first, e.second));
+        }
+        
+        compute_maximum_matching();
+    }
+
+private:
+    void compute_maximum_matching() {
+        fill(mate.begin(), mate.end(), -1);
+        
+        while(true) {
+            if(!build_bfs_tree()) break;
+            find_augmenting_paths();
+        }
+    }
+    
+    bool build_bfs_tree() {
+        fill(evenlvl.begin(), evenlvl.end(), -1);
+        fill(oddlvl.begin(), oddlvl.end(), -1);
+        fill(removed.begin(), removed.end(), 0);
+        fill(color.begin(), color.end(), 0);
+        
+        for(int i = 0; i < n; i++) {
+            predecessors[i].clear();
+            ddfsPredecessorsPtr[i] = 0;
+            childsInDDFSTree[i].clear();
+        }
+        
+        bud.reset(n);
+        
+        queue<int> q;
+        for(int i = 0; i < n; i++) {
+            if(mate[i] == -1) {
+                evenlvl[i] = 0;
+                q.push(i);
+            }
+        }
+        
+        bool found_augmenting_path = false;
+        
+        while(!q.empty() && !found_augmenting_path) {
+            int u = q.front();
+            q.pop();
+            
+            for(auto& e : G[u]) {
+                int v = e.to;
+                
+                if(evenlvl[u] != -1) {
+                    if(mate[u] == v) continue;
+                    
+                    if(evenlvl[v] == -1 && oddlvl[v] == -1) {
+                        if(mate[v] == -1) {
+                            found_augmenting_path = true;
+                        } else {
+                            oddlvl[v] = evenlvl[u] + 1;
+                            evenlvl[mate[v]] = oddlvl[v] + 1;
+                            q.push(mate[v]);
+                        }
+                    }
+                }
+            }
+        }
+        
+        return found_augmenting_path;
+    }
+    
+    void find_augmenting_paths() {
+        for(int i = 0; i < n; i++) {
+            if(mate[i] == -1 && evenlvl[i] == 0) {
+                vector<int> path;
+                if(find_augmenting_path_from(i, path)) {
+                    apply_augmenting_path(path);
+                }
+            }
+        }
+    }
+    
+    bool find_augmenting_path_from(int start, vector<int>& path) {
+        path.clear();
+        path.push_back(start);
+        
+        function<bool(int, vector<int>&)> dfs = [&](int u, vector<int>& current_path) -> bool {
+            for(auto& e : G[u]) {
+                int v = e.to;
+                if(mate[u] == v) continue;
+                
+                if(mate[v] == -1 && evenlvl[v] == -1) {
+                    current_path.push_back(v);
+                    return true;
+                }
+                
+                if(oddlvl[v] == evenlvl[u] + 1 && mate[v] != -1) {
+                    current_path.push_back(v);
+                    current_path.push_back(mate[v]);
+                    if(dfs(mate[v], current_path)) return true;
+                    current_path.pop_back();
+                    current_path.pop_back();
+                }
+            }
+            return false;
+        };
+        
+        return dfs(start, path);
+    }
+    
+    void apply_augmenting_path(const vector<int>& path) {
+        for(int i = 0; i < path.size() - 1; i += 2) {
+            mate[path[i]] = path[i + 1];
+            mate[path[i + 1]] = path[i];
         }
     }
 
@@ -108,6 +235,25 @@ struct micali_vazirani{
             stack2.pop_back();
         }
         return -1;
+    }
+
+public:
+    int max_matching_size() {
+        int count = 0;
+        for(int i = 0; i < n; i++) {
+            if(mate[i] != -1 && i < mate[i]) count++;
+        }
+        return count;
+    }
+    
+    vector<pair<int, int>> max_matching() {
+        vector<pair<int, int>> matching;
+        for(int i = 0; i < n; i++) {
+            if(mate[i] != -1 && i < mate[i]) {
+                matching.push_back({i, mate[i]});
+            }
+        }
+        return matching;
     }
 };
 #endif
