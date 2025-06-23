@@ -209,7 +209,6 @@ public:
     template<typename T>
     static vector<T> bellman_ford(graph<T> &G, int s){
         int n = G.get_vnum();
-        bool dir = G.get_dir();
         const T TINF = numeric_limits<T>::max()/3;
         edges<T> es = G.get_edge_set();
         vector<T> dist(n, TINF);
@@ -218,17 +217,14 @@ public:
         dist[s] = 0;
         for(int i=0; i<n; i++) for(auto e : es){
             if(dist[e.from]!=TINF && dist[e.from]+e.cost<dist[e.to]) dist[e.to] = dist[e.from] + e.cost;
-            if(!dir && dist[e.to]!=TINF && dist[e.to]+e.cost<dist[e.from]) dist[e.from] = dist[e.to] + e.cost;
         }
 
         for(int i=0; i<n; i++) for(auto e : es){
             if(dist[e.from]!=TINF && dist[e.from]+e.cost<dist[e.to]) dist[e.to] = dist[e.from] + e.cost, flag[e.to]=true;
-            if(!dir && dist[e.to]!=TINF && dist[e.to]+e.cost<dist[e.from]) dist[e.from] = dist[e.to] + e.cost, flag[e.from]=true;
         }
 
         for(int i=0; i<n; i++) for(auto e : es){
             flag[e.to] = flag[e.to] | flag[e.from];
-            if(!dir) flag[e.from] = flag[e.from] | flag[e.to];
         }
         for(int v=0; v<n; v++) if(flag[v]) dist[v] = -TINF;
 
