@@ -209,6 +209,8 @@ public:
     template<typename T>
     static vector<T> bellman_ford(graph<T> &G, int s){
         int n = G.get_vnum();
+        bool dir = G.get_dir();
+        assert(dir);
         const T TINF = numeric_limits<T>::max()/3;
         edges<T> es = G.get_edge_set();
         vector<T> dist(n, TINF);
