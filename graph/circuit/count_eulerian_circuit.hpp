@@ -5,7 +5,7 @@
 #include "../header.hpp"
 #include "../matrix/matrix.hpp"
 #include "../datastructure/union_find.hpp"
-#include "template.hpp"
+#include "../graph-template.hpp"
 #include "count_directed_spanning_tree.hpp"
 #include "../math/combination.hpp"
 

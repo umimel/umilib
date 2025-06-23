@@ -3,7 +3,7 @@
 
 #include<bits/stdc++.h>
 #include "../../header.hpp"
-#include "template.hpp"
+#include "../graph-template.hpp"
 using namespace std;
 
 /*start*/
