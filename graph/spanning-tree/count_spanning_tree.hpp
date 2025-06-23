@@ -4,7 +4,7 @@
 /*depend on*/
 #include "../header.hpp"
 #include "../matrix/matrix.hpp"
-#include "template.hpp"
+#include "../graph-template.hpp"
 
 /*start*/
 template<typename T>

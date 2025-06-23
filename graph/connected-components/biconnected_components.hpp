@@ -3,7 +3,7 @@
 
 /*depend on*/
 #include "../../header.hpp"
-#include "../template.hpp"
+#include "../graph-template.hpp"
 #include "lowlink.hpp"
 
 /*start*/
