@@ -6,8 +6,6 @@
 using namespace std;
 using ll = long long;
 using pll = pair<ll, ll>;
-#define drep(i, cc, n) for (ll i = (cc); i <= (n); ++i)
-#define rep(i, n) drep(i, 0, n - 1)
 #define all(a) (a).begin(), (a).end()
 #define pb push_back
 #define fi first
