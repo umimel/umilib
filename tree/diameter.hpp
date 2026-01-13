@@ -66,6 +66,7 @@ struct diameter{
         };
 
         dfs3(s, -1);
+        reverse(path.begin(), path.end());
     }
 
     pair<int, int> get_endpoints(){return {s, t};}
