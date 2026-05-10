@@ -2,7 +2,8 @@
 #define HEADER_HPP
 
 /*start*/
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
+
 using namespace std;
 using ll = long long;
 using pll = pair<ll, ll>;

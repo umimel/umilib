@@ -6,7 +6,7 @@
 template<class T>
 struct range_set{
 public:
-    const T TINF = std::numeric_limits<T>::max() / 2;
+    static constexpr T TINF = std::numeric_limits<T>::max() / 2;
 	T sum;
 	std::set<std::pair<T, T>> st;
 	range_set() : sum(0) {
