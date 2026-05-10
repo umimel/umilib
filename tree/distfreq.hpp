@@ -3,7 +3,7 @@
 
 /*depend on*/
 #include "../header.hpp"
-#include "../graph/graph-template.hpp"
+#include "../graph/graph.hpp"
 #include "../../atcoder/convolution"
 
 /*start*/

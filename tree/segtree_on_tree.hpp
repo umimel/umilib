@@ -3,7 +3,7 @@
 
 /*depends on*/
 #include "../header.hpp"
-#include "../graph/graph-template.hpp"
+#include "../graph/graph.hpp"
 
 /*start*/
 template<typename W, W (*op)(W, W), W (*ie)()>

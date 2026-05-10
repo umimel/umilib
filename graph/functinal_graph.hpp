@@ -3,7 +3,7 @@
 
 /*depend on*/
 #include "../header.hpp"
-#include "../graph-template.hpp"
+#include "graph.hpp"
 
 /*start*/
 struct functional_graph {

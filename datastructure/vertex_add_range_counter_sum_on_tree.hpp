@@ -4,7 +4,7 @@
 /*depends on*/
 #include "../header.hpp"
 #include "fenwick_tree.hpp"
-#include "../graph/graph-template.hpp"
+#include "../graph/graph.hpp"
 #include "../tree/lowest_common_ancestor.hpp"
 
 /*start*/
