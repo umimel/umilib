@@ -4,7 +4,7 @@
 /*depend on*/
 #include "../header.hpp"
 #include "graph.hpp"
-#include "dijkstra.hpp"
+#include "shortest_path.hpp"
 
 /*start*/
 template<typename S>

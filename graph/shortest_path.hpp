@@ -2,69 +2,90 @@
 #define SHORTEST_PATH_HPP
 
 /*depend on*/
-#include "shortest_path_tree.hpp"
-#include "bfs.hpp"
-#include "binary_bfs.hpp"
-#include "constant_bfs.hpp"
-#include "complement_bfs.hpp"
-#include "bellman_ford.hpp"
-#include "warshall_floyd.hpp"
-#include "pered.hpp"
-#include "malick_mittal_gupta.hpp"
-#include "roditty_zwick.hpp"
-#include "yen.hpp"
+#include "../header.hpp"
+#include "graph.hpp"
 
 /*start*/
-class shortest_path{
-public:
-    template<typename T>
-    static vector<T> bfs(graph<T> &G, int s){
-        return ::bfs(G, s);
+template<typename T>
+vector<T> dijkstra(graph<T> &G, int s){
+    int n = G.size();
+    const T TINF = numeric_limits<T>::max()/3;
+    vector<T> dist(n, TINF);
+
+    dist[s] = 0;
+    priority_queue<pair<T, int>, vector<pair<T, int>>, greater<>> que;
+    que.push({0, s});
+
+    while(!que.empty()){
+        auto [d, v] = que.top();
+        que.pop();
+        if(dist[v] < d) continue;
+
+        for(auto e : G[v]){
+            if(dist[v] + e.cost < dist[e.to]){
+                dist[e.to] = dist[v] + e.cost;
+                que.push({dist[e.to], e.to});
+            }
+        }
     }
 
-    template<typename T>
-    static vector<T> binary_bfs(graph<T> &G, int s){
-        return ::binary_bfs(G, s);
+    return dist;
+}
+
+template<typename T>
+vector<T> bellman_ford(graph<T> &G, int s){
+    int n = G.size();
+    const T TINF = numeric_limits<T>::max()/3;
+    edges<T> es = G.get_edge_set();
+    vector<T> dist(n, TINF);
+    vector<bool> flag(n, false);
+
+    dist[s] = 0;
+    for(int i=0; i<n; i++) for(auto e : es){
+        if(dist[e.from] != TINF && dist[e.from] + e.cost < dist[e.to]){
+            dist[e.to] = dist[e.from] + e.cost;
+        }
     }
 
-    template<typename T>
-    static vector<T> constant_bfs(graph<T> &G, int s, T W){
-        return ::constant_bfs(G, s, W);
+    for(int i=0; i<n; i++) for(auto e : es){
+        if(dist[e.from] != TINF && dist[e.from] + e.cost < dist[e.to]){
+            dist[e.to] = dist[e.from] + e.cost;
+            flag[e.to] = true;
+        }
     }
 
-    template<typename T>
-    static vector<T> complement_bfs(graph<T> &G, int s){
-        return ::complement_bfs(G, s);
-    }
-    
-    template<typename T>
-    static vector<T> bellman_ford(graph<T> &G, int s){
-        return ::bellman_ford(G, s);
+    for(int i=0; i<n; i++) for(auto e : es){
+        flag[e.to] = flag[e.to] | flag[e.from];
     }
 
-    template<typename T>
-    static vector<vector<T>> warshall_floyd(graph<T> &G){
-        return ::warshall_floyd(G);
+    for(int v=0; v<n; v++) if(flag[v]) dist[v] = -TINF;
+    return dist;
+}
+
+template<typename T>
+vector<vector<T>> warshall_floyd(graph<T> &G){
+    int n = G.size();
+    const T TINF = numeric_limits<T>::max()/3;
+    vector<vector<T>> dist(n, vector<T>(n, TINF));
+
+    for(int v=0; v<n; v++) dist[v][v] = 0;
+    for(int v=0; v<n; v++){
+        for(auto e : G[v]){
+            dist[v][e.to] = min(dist[v][e.to], e.cost);
+        }
     }
 
-    template<typename T>
-    static vector<vector<pair<int, T>>> pered(graph<T> &G, int k){
-        return ::pered(G, k);
+    for(int k=0; k<n; k++){
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                if(dist[i][k] < TINF && dist[k][j] < TINF){
+                    dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+                }
+            }
+        }
     }
 
-    template<typename T>
-    static vector<T> malick_mittal_gupta(graph<T> &G, int s, int t){
-        return ::malick_mittal_gupta(G, s, t);
-    }
+    return dist;
+}
 
-    template<typename T>
-    static vector<T> roditty_zwick(graph<T> &G, int s, int t){
-        return ::roditty_zwick(G, s, t);
-    }
-
-    template<typename T>
-    static vector<T> yen(graph<T> &G, int s, int t, int k){
-        return ::yen(G, s, t, k);
-    }
-};
 #endif

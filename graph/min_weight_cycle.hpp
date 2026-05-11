@@ -8,7 +8,7 @@
 
 /*start*/
 template<typename S>
-edges<S> find_min_cycle(graph<S> &G, int s){
+edges<S> min_weight_cycle(graph<S> &G, int s){
     int n = G.size();
     const S SINF = numeric_limits<S>::max()/3;
     bool dir = G.get_dir();
@@ -70,14 +70,14 @@ edges<S> find_min_cycle(graph<S> &G, int s){
 }
 
 template<typename S>
-edges<S> find_min_cycle(graph<S> &G){
+edges<S> min_weight_cycle(graph<S> &G){
     int n = G.size();
     const S SINF = numeric_limits<S>::max()/2;
     S cost = SINF;
     edges<S> min_cyc;
     
     for(int s=0; s<n; s++){
-        auto cyc = find_min_cycle(G, s);
+        auto cyc = min_weight_cycle(G, s);
         if(cyc.empty()) continue;
         S sum = 0;
         for(auto e : cyc) sum += e.cost;
