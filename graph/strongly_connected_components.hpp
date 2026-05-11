@@ -9,28 +9,28 @@
 struct strongly_connected_components{
     int n=0;
     int n2=0;
-    unweighted_graph dag;
+    graph<int> dag;
     vector<int> group_list;
     vector<int> group_size;
 
-    strongly_connected_components(unweighted_graph &G){
+    strongly_connected_components(const graph<int> &G){
         n = (int)G.size();
         group_list.resize(n, -1);
         init(G);
     }
 
-    void init(unweighted_graph &G){
+    void init(const graph<int> &G){
         vector<bool> checked(n, false);
         vector<int> order_list(n, -1);
         int cnt = 0;
-        unweighted_graph RG(n);
-        for(int v=0; v<n; v++) for(int to : G[v]) RG[to].pb(v);
+        vector<vector<int>> RG(n);
+        for(int v=0; v<n; v++) for(auto& e : G[v]) RG[e.to].pb(v);
 
         function<void(int)> dfs1 = [&](int v){
             checked[v] = true;
-            for(int to : G[v]){
-                if(checked[to]) continue;
-                dfs1(to);
+            for(auto& e : G[v]){
+                if(checked[e.to]) continue;
+                dfs1(e.to);
             }
             order_list[cnt++] = v;
             return;
@@ -54,13 +54,14 @@ struct strongly_connected_components{
             dfs2(order_list[i]);
             group++;
         }
- 
+
         n2 = group;
         group_size.resize(n2, 0);
         for(int v=0; v<n; v++) group_size[group_list[v]]++;
 
-        unweighted_graph dag_tmp(n2);
-        for(int v=0; v<n; v++) for(int to : G[v]){
+        vector<vector<int>> dag_tmp(n2);
+        for(int v=0; v<n; v++) for(auto& e : G[v]){
+            int to = e.to;
             if(group_list[v] == group_list[to]) continue;
             dag_tmp[group_list[v]].push_back(group_list[to]);
         }
@@ -70,14 +71,14 @@ struct strongly_connected_components{
             dag_tmp[v].erase(unique(all(dag_tmp[v])), dag_tmp[v].end());
         }
 
-        dag.resize(n2);
+        dag = graph<int>(n2, true);
         for(int v=0; v<n2; v++){
-            for(int to : dag_tmp[v]) dag[v].push_back(to);
+            for(int to : dag_tmp[v]) dag.add_edge(v, to);
         }
     }
-    
+
     //各頂点番号は, トポロジカルソート済み
-    unweighted_graph get_dag(){return dag;}
+    graph<int> get_dag(){return dag;}
     
     int get_group(int v){return group_list[v];}
     int get_size(int group){return group_size[group];}

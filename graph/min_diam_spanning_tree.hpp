@@ -8,7 +8,7 @@
 
 /*start*/
 template<typename S>
-pair<S, edges<S>> minimum_diameter_spanning_tree(graph<S> &G){
+pair<S, edges<S>> min_diam_spanning_tree(graph<S> &G){
     int n = G.size();
     int m = G.edge_size();
     const S SINF = numeric_limits<S>::max()/2;

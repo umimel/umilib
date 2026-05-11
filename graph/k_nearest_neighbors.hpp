@@ -7,26 +7,33 @@
 
 /*start*/
 template<typename T>
-vector<vector<int>> k_nearest_neighbors(graph<T> &G, int k){
+vector<vector<pair<int, T>>> pered(graph<T> &G, int k){
     int n = G.size();
-    priority_queue<tuple<T, int, int>, vector<tuple<T, int, int>>, greater<tuple<T, int, int>>> PQ;
-    vector<vector<int>> neibors(n);
-    vector<unordered_map<int, bool>> mp(n);
-    for(int v=0; v<n; v++) PQ.push({0, v, v});
-    while(!PQ.empty()){
-        auto [d, v, s] = PQ.top();
-        PQ.pop();
-        if(mp[v][s]) continue;
-        mp[v][s] = true;
-        neibors[v].push_back(s);
+    const T TINF = numeric_limits<T>::max()/3;
+    priority_queue<tuple<T, int, int>, vector<tuple<T, int, int>>, greater<>> que;
+    vector<vector<pair<int, T>>> neibors(n);
+    vector<unordered_map<int, T>> mp(n);
+    for(int v=0; v<n; v++){
+        que.push({0, v, v});
+        mp[v][v] = 0;
+    }
+    while(!que.empty()){
+        auto [d, v, s] = que.top();
+        que.pop();
+        if((int)neibors[v].size()==k) continue;
+        if(mp[v].find(s)!=mp[v].end()) if(mp[v][s] < d) continue;
+        neibors[v].push_back({s, d});
 
-        for(edge<T> e : G[v]){
-            if(mp[e.to][s]) continue;
+        for(auto e : G[v]){
             if((int)neibors[e.to].size()==k) continue;
-            PQ.push({d+e.cost, e.to, s});
+            if(mp[e.to].find(s)==mp[e.to].end()) mp[e.to][s] = TINF;
+            if(d + e.cost < mp[e.to][s]){
+                mp[e.to][s] = d + e.cost;
+                que.push({d+e.cost, e.to, s});
+            }
         }
     }
 
     return neibors;
-};
+}
 #endif

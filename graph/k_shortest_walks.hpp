@@ -1,5 +1,5 @@
-#ifndef EPPSTEIN_HPP
-#define EPPSTEIN_HPP
+#ifndef K_SHORTEST_WALKS_HPP
+#define K_SHORTEST_WALKS_HPP
 
 /*depend on*/
 #include "../header.hpp"

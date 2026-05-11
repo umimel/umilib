@@ -9,11 +9,11 @@
 struct two_edge_connected_components{
     int n, m;
     vector<vector<pair<int, int>>> G;
-    unweighted_graph H;
+    graph<int> H;
     vector<bool> isbridge;
     vector<int> groupList;
 
-    void init(Edges<int> &E){
+    void init(edges<int> &E){
         m = (int)E.size();
         G.resize(n);
         isbridge.resize(m, false);
@@ -82,7 +82,7 @@ struct two_edge_connected_components{
         }
     }
 
-    two_edge_connected_components(int n, Edges<int> &E) : n(n){
+    two_edge_connected_components(int n, edges<int> &E) : n(n){
         init(E);
         findbridge();
         construction_ecc();

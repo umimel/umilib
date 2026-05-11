@@ -6,7 +6,7 @@
 #include "graph.hpp"
 
 /*start*/
-vector<int> maximum_independent_set(unweighted_graph G){
+vector<int> maximum_independent_set(graph<int> G){
     int n = (int)G.size();
 
     //半分に分けて, MISかどうかを判定
@@ -14,13 +14,15 @@ vector<int> maximum_independent_set(unweighted_graph G){
     int n2 = n-n1;
     vector<vector<int>> G1(n1), G2(n2), G3(n);
     for(int u=0; u<n1; u++){
-        for(int v : G[u]){
+        for(auto& e : G[u]){
+            int v = e.to;
             if(v < n1) G1[u].pb(v);
             else G3[u].pb(v);
         }
     }
     for(int u=n1; u<n; u++){
-        for(int v : G[u]){
+        for(auto& e : G[u]){
+            int v = e.to;
             if(n1 <= v) G2[u-n1].pb(v);
             else G3[u].pb(v);
         }

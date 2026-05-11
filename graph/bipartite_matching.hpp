@@ -8,9 +8,9 @@
 /*start*/
 struct bipartite_matching{
     int value = 0;
-    Edges<bool> P;
+    edges<bool> P;
 
-    bipartite_matching(int L, int R, Edges<bool> E){
+    bipartite_matching(int L, int R, edges<bool> E){
         //source:L+R, sing:L+R+1, vertices set:[0, L-1], [L, L+R-1]
         residual_graph<bool> G(L+R+2);
         int s = L+R, t = L+R+1;
@@ -89,6 +89,6 @@ struct bipartite_matching{
     }
 
     int max_value(){return value;}
-    Edges<bool> max_pair(){return P;}
+    edges<bool> max_pair(){return P;}
 };
 #endif

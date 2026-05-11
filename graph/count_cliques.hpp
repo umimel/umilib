@@ -7,7 +7,7 @@
 
 /*start*/
 template<typename T>
-T count_cliques(unweighted_graph &G, vector<T> x){
+T count_cliques(const graph<int> &G, vector<T> x){
     int n = (int)G.size();
     int m = 0;
     for(int v=0; v<n; v++) m += (int)G[v].size();
@@ -17,8 +17,8 @@ T count_cliques(unweighted_graph &G, vector<T> x){
 
     vector<bitset<100>> A(n);
     vector<int> deg(n, 0);
-    for(int v=0; v<n; v++) for(int to : G[v]){
-        A[v][to]=1;
+    for(int v=0; v<n; v++) for(auto& e : G[v]){
+        A[v][e.to]=1;
         deg[v]++;
     }
 

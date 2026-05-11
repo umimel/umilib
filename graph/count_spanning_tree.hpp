@@ -8,14 +8,14 @@
 
 /*start*/
 template<typename T>
-T count_spanning_tree(unweighted_graph G){
+T count_spanning_tree(graph<int> G){
     int n = (int)G.size();
     if(n==1) return T(1);
 
     matrix<T> L(n);
     for(int v=0; v<n; v++){
         L[v][v] = T((int)G[v].size());
-        for(int to : G[v]) L[v][to]-=T(1);
+        for(auto& e : G[v]) L[v][e.to]-=T(1);
     }
 
     matrix<T> L11(n-1);

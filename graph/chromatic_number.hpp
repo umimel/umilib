@@ -7,10 +7,10 @@
 #include "graph.hpp"
 
 /*start*/
-int chromatic_number(unweighted_graph &G){
+int chromatic_number(const graph<int> &G){
     int n = (int)G.size();
     vector<vector<bool>> A(n, vector<bool>(n, false)); //隣接行列
-    for(int v=0; v<n; v++)for(int to : G[v]) A[v][to] = true;
+    for(int v=0; v<n; v++) for(auto& e : G[v]) A[v][e.to] = true;
 
     vector<bool> connected(1<<n, false);
     for(int bit=0; bit<(1<<n); bit++){

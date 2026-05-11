@@ -132,8 +132,6 @@ struct redge{
     redge(int to, T cap, T cost, int rev) : from(-1), to(to), cap(cap), cost(cost), rev(rev){}
 };
 
-template<typename T> using Edges = vector<edge<T>>;
-template<typename T> using tree = vector<Edges<T>>;
-using unweighted_graph = vector<vector<int>>;
+template<typename T> using tree = vector<edges<T>>;
 template<typename T> using residual_graph = vector<vector<redge<T>>>;
 #endif

@@ -8,7 +8,7 @@
 
 /*start*/
 struct biconnected_components{
-    unweighted_graph G;
+    graph<int> G;
     lowlink L;
     int n;
     vector<bool> used;
@@ -16,7 +16,7 @@ struct biconnected_components{
     stack<pair<int, int>> st;
     vector<int> diff;
 
-    biconnected_components(unweighted_graph G) : G(G){
+    biconnected_components(graph<int> G) : G(G){
         n = (int)G.size();
         used.resize(n, false);
         L = lowlink(G);
@@ -46,9 +46,10 @@ struct biconnected_components{
         }
     }
 
-    void dfs(int v, int p, unweighted_graph &G){
+    void dfs(int v, int p, const graph<int> &G){
         used[v] = true;
-        for(int to : G[v]){
+        for(auto& ge : G[v]){
+            int to = ge.to;
             if(to==p) continue;
             if(!used[to] || L.ord[to]<L.ord[v]){
                 st.push({min(v, to), max(v, to)});
@@ -85,7 +86,7 @@ struct biconnected_components{
             res.push_back(vset);
         }
 
-        for(int v=0; v<n; v++)if((int)G[v].size()==0) res.push_back({v});
+        for(int v=0; v<n; v++) if((int)G[v].size()==0) res.push_back({v});
 
         return res;
     }

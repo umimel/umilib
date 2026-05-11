@@ -15,7 +15,7 @@ struct lowlink{
     vector<pair<int, int>> bridges;
 
     lowlink(){}
-    lowlink(unweighted_graph &G){
+    lowlink(const graph<int> &G){
         n = (int)G.size();
         used.resize(n, false);
         ord.resize(n, 0);
@@ -28,13 +28,14 @@ struct lowlink{
         for(int a : aps) vec_aps[a] = true;
     }
 
-    int dfs(int v, int k, int p, unweighted_graph &G){
+    int dfs(int v, int k, int p, const graph<int> &G){
         used[v] = true;
         ord[v] = k++;
         low[v] = ord[v];
         bool is_aps = false;
         int cnt = 0;
-        for(int to : G[v]){
+        for(auto& e : G[v]){
+            int to = e.to;
             if(!used[to]){
                 cnt++;
                 k = dfs(to, k, v, G);
