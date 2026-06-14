@@ -1,86 +1,184 @@
 #ifndef MINCOSTFLOW_HPP
 #define MINCOSTFLOW_HPP
 
-/*depend on*/
+#include <bits/stdc++.h>
 #include "../header.hpp"
-#include "graph.hpp"
+using namespace std;
 
 /*start*/
-template<typename T>
-struct mincostflow{
-    residual_graph<T> G;
-    const T TINF = std::numeric_limits<T>::max() / 2;
-    int n;
+template <class Cap, class Cost>
+struct mcf_graph {
+public:
+    mcf_graph() {}
+    explicit mcf_graph(int n) : _n(n) {}
 
-    mincostflow(residual_graph<T> &G_){
-        n = (int)G_.size();
-        G.resize(n);
-
-        for(int from=0; from<n; from++){
-            for(redge<T> e : G_[from]){
-                G[from].push_back(redge<T>(e.to, e.cap, e.cost, (int)G[e.to].size()));
-                G[e.to].pb(redge<T>(from, 0, -e.cost, (int)G[from].size()-1));
-            }
-        }
+    int add_edge(int from, int to, Cap cap, Cost cost) {
+        assert(0 <= from && from < _n);
+        assert(0 <= to && to < _n);
+        assert(0 <= cap);
+        assert(0 <= cost);
+        int m = int(_edges.size());
+        _edges.push_back({from, to, cap, 0, cost});
+        return m;
     }
 
-    T flow(int s, int t, T f){
-        residual_graph<T> H(n);
-        vector<T> h(n, 0); //ポテンシャル
-        vector<T> dist(n, 0); //最短距離
-        vector<int> prevv(n, 0); // 直前の頂点
-        vector<int> preve(n, 0); // 直前の辺
+    struct edge {
+        int from, to;
+        Cap cap, flow;
+        Cost cost;
+    };
 
-        for(int from=0; from<n; from++){
-            for(redge<T> e : G[from]){
-                H[from].push_back(e);
+    edge get_edge(int i) {
+        assert(0 <= i && i < (int)_edges.size());
+        return _edges[i];
+    }
+    vector<edge> edges() { return _edges; }
+
+    pair<Cap, Cost> flow(int s, int t) {
+        return flow(s, t, numeric_limits<Cap>::max());
+    }
+    pair<Cap, Cost> flow(int s, int t, Cap flow_limit) {
+        return slope(s, t, flow_limit).back();
+    }
+    vector<pair<Cap, Cost>> slope(int s, int t) {
+        return slope(s, t, numeric_limits<Cap>::max());
+    }
+    vector<pair<Cap, Cost>> slope(int s, int t, Cap flow_limit) {
+        assert(0 <= s && s < _n);
+        assert(0 <= t && t < _n);
+        assert(s != t);
+
+        int m = int(_edges.size());
+        vector<int> edge_idx(m);
+
+        vector<vector<_edge>> g(_n);
+        {
+            vector<int> redge_idx(m);
+            for (int i = 0; i < m; i++) {
+                auto& e = _edges[i];
+                edge_idx[i] = (int)g[e.from].size();
+                redge_idx[i] = (int)g[e.to].size();
+                g[e.from].push_back({e.to, -1, e.cap - e.flow, e.cost});
+                g[e.to].push_back({e.from, -1, e.flow, -e.cost});
+            }
+            for (int i = 0; i < m; i++) {
+                auto& e = _edges[i];
+                g[e.from][edge_idx[i]].rev = redge_idx[i];
+                g[e.to][redge_idx[i]].rev = edge_idx[i];
             }
         }
 
-        T res = 0;
-        while(f > 0){
-            //ダイクストラ法を用いてhを更新
-            priority_queue<pair<T, int>, vector<pair<T, int>>, greater<pair<T, int>>> PQ;
-            for(int i=0; i<n; i++) dist[i] = TINF;
-            dist[s] = 0;
-            PQ.push({0, s});
-            while(!PQ.empty()){
-                pair<T, int> p = PQ.top();
-                PQ.pop();
-                int v = p.se;
-                if(dist[v] < p.fi) continue;
+        auto result = _slope(g, s, t, flow_limit);
 
-                for(int i=0; i<(int)H[v].size(); i++){
-                    redge<T> &e = H[v][i];
-                    if(e.cap > 0 && dist[e.to] > dist[v] + e.cost + h[v] - h[e.to]){
-                        dist[e.to] = dist[v] + e.cost + h[v] - h[e.to];
-                        prevv[e.to] = v;
-                        preve[e.to] = i;
-                        PQ.push({dist[e.to], e.to});
+        for (int i = 0; i < m; i++) {
+            _edges[i].flow = _edges[i].cap - g[_edges[i].from][edge_idx[i]].cap;
+        }
+
+        return result;
+    }
+
+private:
+    int _n;
+    vector<edge> _edges;
+
+    struct _edge {
+        int to, rev;
+        Cap cap;
+        Cost cost;
+    };
+
+    vector<pair<Cap, Cost>> _slope(vector<vector<_edge>>& g, int s, int t, Cap flow_limit) {
+        // dual[v]: Johnson potential; dist[v]: reduced-cost shortest distance
+        vector<pair<Cost, Cost>> dual_dist(_n);
+        vector<int> prev_e(_n);  // prev_e[v] = index of reverse edge in g[v] on shortest path
+        vector<bool> vis(_n);
+        struct Q {
+            Cost key;
+            int to;
+            bool operator<(Q r) const { return key > r.key; }
+        };
+        vector<int> que_min;  // zero-cost edges (dist == current dist)
+        vector<Q> que;
+
+        auto dual_ref = [&]() -> bool {
+            for (int i = 0; i < _n; i++) dual_dist[i].second = numeric_limits<Cost>::max();
+            fill(vis.begin(), vis.end(), false);
+            que_min.clear();
+            que.clear();
+
+            size_t heap_r = 0;
+            dual_dist[s].second = 0;
+            que_min.push_back(s);
+            while (!que_min.empty() || !que.empty()) {
+                int v;
+                if (!que_min.empty()) {
+                    v = que_min.back();
+                    que_min.pop_back();
+                } else {
+                    while (heap_r < que.size()) {
+                        heap_r++;
+                        push_heap(que.begin(), que.begin() + heap_r);
+                    }
+                    v = que.front().to;
+                    pop_heap(que.begin(), que.end());
+                    que.pop_back();
+                    heap_r--;
+                }
+                if (vis[v]) continue;
+                vis[v] = true;
+                if (v == t) break;
+                Cost dual_v = dual_dist[v].first, dist_v = dual_dist[v].second;
+                for (auto& e : g[v]) {
+                    if (!e.cap) continue;
+                    Cost cost = e.cost - dual_dist[e.to].first + dual_v;
+                    if (dual_dist[e.to].second - dist_v > cost) {
+                        Cost dist_to = dist_v + cost;
+                        dual_dist[e.to].second = dist_to;
+                        prev_e[e.to] = e.rev;
+                        if (dist_to == dist_v) {
+                            que_min.push_back(e.to);
+                        } else {
+                            que.push_back({dist_to, e.to});
+                        }
                     }
                 }
             }
-            if(dist[t] == TINF){
-                //これ以上流せない
-                return -1;
-            }
-            for(int v=0; v<n; v++) h[v] += dist[v];
+            if (!vis[t]) return false;
 
-            // s-t間最短経路に沿って目一杯流す
-            T d = f;
-            for(int v=t; v!=s; v=prevv[v]){
-                d = min(d, H[prevv[v]][preve[v]].cap);
+            for (int v = 0; v < _n; v++) {
+                if (!vis[v]) continue;
+                dual_dist[v].first -= dual_dist[t].second - dual_dist[v].second;
             }
-            f -= d;
-            res += d*h[t];
-            for(int v=t; v!=s; v=prevv[v]){
-                redge<T> &e = H[prevv[v]][preve[v]];
-                e.cap -= d;
-                H[v][e.rev].cap += d;
+            return true;
+        };
+
+        Cap flow = 0;
+        Cost cost = 0, prev_cost_per_flow = -1;
+        vector<pair<Cap, Cost>> result = {{Cap(0), Cost(0)}};
+        while (flow < flow_limit) {
+            if (!dual_ref()) break;
+            Cap c = flow_limit - flow;
+            for (int v = t; v != s; ) {
+                // g[v][prev_e[v]] is the reverse edge from v to previous vertex u
+                int u = g[v][prev_e[v]].to;
+                c = min(c, g[u][g[v][prev_e[v]].rev].cap);
+                v = u;
             }
+            for (int v = t; v != s; ) {
+                auto& rev_e = g[v][prev_e[v]];
+                int u = rev_e.to;
+                rev_e.cap += c;
+                g[u][rev_e.rev].cap -= c;
+                v = u;
+            }
+            Cost d = -dual_dist[s].first;
+            flow += c;
+            cost += c * d;
+            if (prev_cost_per_flow == d) result.pop_back();
+            result.push_back({flow, cost});
+            prev_cost_per_flow = d;
         }
-
-        return res;
+        return result;
     }
 };
 #endif
