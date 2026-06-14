@@ -15,13 +15,30 @@ struct segtree{
         dat.resize(2*n, e());
     }
 
-    void update(int k, T x){
+    void set(int k, T x){
+        assert(0 <= k && k < n);
         k += n-1;
         dat[k] = x;
         while(k > 0){
             k = (k-1)/2;
             dat[k] = op(dat[2*k+1], dat[2*k+2]);
         }
+    }
+
+    void add(int k, T x){
+        assert(0 <= k && k < n);
+        k += n-1;
+        dat[k] += x;
+        while(k > 0){
+            k = (k-1)/2;
+            dat[k] = op(dat[2*k+1], dat[2*k+2]);
+        }
+    }
+
+    T get(int k){
+        assert(0 <= k && k < n);
+        return dat[k+n-1];
+        k += n-1;
     }
 
     // the prod element of [a, b)
