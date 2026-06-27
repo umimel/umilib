@@ -39,6 +39,7 @@ struct undo_union_find{
     }
 
     void undo(){
+        if(st.empty()) return;
         int rx = st.top().first;
         int ry = st.top().second;
         st.pop();
